@@ -1,0 +1,40 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "EV-Meter EV Charger Setup",
+        "description": "Enter your EV-Meter charger details. MQTT settings are preconfigured.",
+        "data": {
+          "charger_id": "Charger ID",
+          "user_id": "User ID"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the MQTT broker. Please check the host, port, and credentials.",
+      "unknown": "An unknown error occurred."
+    },
+    "abort": {
+      "already_configured": "This EV-Meter charger is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "status": {
+        "name": "Charger Status"
+      },
+      "power": {
+        "name": "Charging Power"
+      },
+      "session_energy": {
+        "name": "Session Energy"
+      },
+      "voltage": {
+        "name": "Voltage"
+      },
+      "current": {
+        "name": "Current"
+      }
+    }
+  }
+}

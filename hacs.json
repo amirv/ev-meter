@@ -1,0 +1,7 @@
+{
+  "name": "EV-Meter EV Charger",
+  "content_in_root": false,
+  "country": [],
+  "render_readme": true,
+  "iot_class": "cloud_polling"
+}

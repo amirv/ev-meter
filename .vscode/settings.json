@@ -1,0 +1,145 @@
+{
+  "python.formatting.provider": "black",
+  "python.linting.ruffEnabled": true,
+  "python.linting.enabled": true,
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit"
+    }
+  },
+  "python.terminal.activateEnvironment": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "gotoSymbolStack.currentStackPosition": 15,
+  "gotoSymbolStack.maxStackPosition": 16,
+  "gotoSymbolStack.filePositionInfo": [
+    {
+      "textFile": "/home/amirv/git/ev-meter/test_real_world.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 29,
+        "character": 20
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/test_real_world.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 29,
+        "character": 19
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/test_real_world.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 53,
+        "character": 35
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/evmeter_client/client.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 227,
+        "character": 40
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/evmeter_client/client.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 181,
+        "character": 31
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/evmeter_client/client.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 117,
+        "character": 28
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/parse.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 39,
+        "character": 35
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/parse.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 39,
+        "character": 34
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/parse.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 39,
+        "character": 31
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/evmeter_client/parser.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 81,
+        "character": 20
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/test_single_payload.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 22,
+        "character": 23
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/evmeter_client/parser.py",
+      "viewColumn": 1,
+      "textPosition": {
+        "line": 87,
+        "character": 41
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/parse.py",
+      "viewColumn": 2,
+      "textPosition": {
+        "line": 43,
+        "character": 43
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/parse.py",
+      "viewColumn": 2,
+      "textPosition": {
+        "line": 6,
+        "character": 5
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/parse.py",
+      "viewColumn": 2,
+      "textPosition": {
+        "line": 6,
+        "character": 35
+      }
+    },
+    {
+      "textFile": "/home/amirv/git/ev-meter/sample/working_info.py",
+      "viewColumn": 2,
+      "textPosition": {
+        "line": 5,
+        "character": 33
+      }
+    }
+  ]
+}
