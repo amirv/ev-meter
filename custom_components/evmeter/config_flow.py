@@ -11,6 +11,9 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
+from evmeter_client import EVMeterClient, EVMeterConfig
+from evmeter_client.exceptions import EVMeterError
+
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,8 +32,6 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    from evmeter_client import EVMeterClient, EVMeterConfig, EVMeterError
-
     # Create client with hardcoded MQTT settings per PRD
     config = EVMeterConfig(
         user_id=data["user_id"],

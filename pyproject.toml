@@ -1,24 +1,33 @@
 [tool.poetry]
-name = "evmeter-client"
-version = "0.1.0"
-description = "A Python client for EV-Meter chargers and a Home Assistant custom integration."
+name = "evmeter-hacs"
+version = "1.0.0"
+description = "Home Assistant custom integration for EV-Meter chargers"
 authors = ["Amir Vadai <amirva@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "evmeter_client"}]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
-aiomqtt = "^2.3.0"
+evmeter-client = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
+pytest = "^7.4.3"
 pytest-asyncio = "^0.23.0"
 pytest-cov = "^4.1.0"
 ruff = "^0.8.0"
 black = "^24.0.0"
 mypy = "^1.13.0"
 pre-commit = "^4.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--strict-markers --disable-warnings"
+asyncio_mode = "auto"
+markers = [
+    "asyncio: marks tests as requiring asyncio",
+]
 
 [build-system]
 requires = ["poetry-core"]

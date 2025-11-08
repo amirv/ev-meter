@@ -1,15 +1,15 @@
 {
   "domain": "evmeter",
-  "name": "EV-Meter EV Charger",
-  "version": "0.1.0",
-  "documentation": "https://github.com/amirv/ev-meter/blob/main/README.md",
-  "issue_tracker": "https://github.com/amirv/ev-meter/issues",
+  "name": "EV-Meter",
+  "version": "1.0.0",
+  "documentation": "https://github.com/amirv/evmeter-hacs/blob/main/README.md",
+  "issue_tracker": "https://github.com/amirv/evmeter-hacs/issues",
   "codeowners": ["@amirv"],
   "config_flow": true,
-  "iot_class": "cloud_polling",
+  "iot_class": "local_push",
   "integration_type": "device",
   "requirements": [
-    "aiomqtt>=1.2.0"
+    "evmeter-client>=1.0.0"
   ],
   "loggers": ["evmeter_client"]
 }

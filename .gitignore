@@ -5,6 +5,9 @@
 **/*private*
 **/secrets_local.yaml
 
+# Poetry lock file (for HACS integration development)
+poetry.lock
+
 # Home Assistant Runtime Files
 .storage/
 home-assistant.log*
@@ -169,3 +172,4 @@ home-assistant_v2.db
 
 # Sample/test data
 sample/
+t/

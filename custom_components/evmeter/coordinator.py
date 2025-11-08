@@ -8,7 +8,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from evmeter_client import EVMeterClient, EVMeterConfig, EVMeterError
+from evmeter_client import EVMeterClient, EVMeterConfig
+from evmeter_client.exceptions import EVMeterError
 
 from .const import DOMAIN
 
