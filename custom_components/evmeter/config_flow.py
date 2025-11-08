@@ -32,19 +32,48 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
+    _LOGGER.debug("Starting connection validation")
+    _LOGGER.debug(f"Charger ID: {data['charger_id']}")
+    _LOGGER.debug(f"User ID: {data['user_id']}")
+
     # Create client with hardcoded MQTT settings per PRD
     config = EVMeterConfig(
         user_id=data["user_id"],
     )
+
+    _LOGGER.debug(f"MQTT Config - Host: {config.mqtt_host}:{config.mqtt_port}")
+    _LOGGER.debug(f"MQTT Config - Username: {config.mqtt_username}")
+    _LOGGER.debug(
+        f"MQTT Config - Response topic: {config.response_topic_template.format(user_id=data['user_id'])}"
+    )
+
     client = EVMeterClient(config)
 
     try:
+        _LOGGER.debug("Attempting MQTT connection...")
         # Test connection and command
         await client.connect()
+        _LOGGER.debug("MQTT connection successful")
+
+        _LOGGER.debug(
+            f"Testing charger status request for charger {data['charger_id']}"
+        )
         # Test that we can get status from the charger
-        await client.get_charger_status(data["charger_id"])
+        status = await client.get_charger_status(data["charger_id"])
+        _LOGGER.debug(f"Charger status response received: {status}")
+
         await client.disconnect()
+        _LOGGER.debug("MQTT disconnection successful")
+
     except EVMeterError as e:
+        _LOGGER.error(f"EVMeterError during validation: {e}")
+        _LOGGER.error(f"Error type: {type(e).__name__}")
+        if hasattr(e, "__cause__") and e.__cause__:
+            _LOGGER.error(f"Underlying cause: {e.__cause__}")
+        raise ConnectionError from e
+    except Exception as e:
+        _LOGGER.error(f"Unexpected error during validation: {e}")
+        _LOGGER.error(f"Error type: {type(e).__name__}")
         raise ConnectionError from e
 
     return {"title": f"EV-Meter Charger {data['charger_id']}"}
@@ -61,12 +90,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         errors: dict[str, str] = {}
         if user_input is not None:
+            _LOGGER.debug(f"Processing user input: {user_input}")
             try:
                 info = await validate_input(self.hass, user_input)
-            except ConnectionError:
-                errors["base"] = "cannot_connect"
-            except Exception:  # pylint: disable=broad-except
-                _LOGGER.exception("Unexpected exception")
+                _LOGGER.debug(f"Validation successful: {info}")
+            except ConnectionError as e:
+                _LOGGER.error(f"Connection error during setup: {e}")
+                # Try to categorize the error for better user feedback
+                error_msg = str(e).lower()
+                if "timeout" in error_msg or "timed out" in error_msg:
+                    errors["base"] = "timeout"
+                elif "name or service not known" in error_msg or "dns" in error_msg:
+                    errors["base"] = "network_unreachable"
+                elif "authentication" in error_msg or "auth" in error_msg:
+                    errors["base"] = "auth_failed"
+                elif "connection refused" in error_msg or "unreachable" in error_msg:
+                    errors["base"] = "network_unreachable"
+                else:
+                    errors["base"] = "cannot_connect"
+            except Exception as e:  # pylint: disable=broad-except
+                _LOGGER.exception(f"Unexpected exception during setup: {e}")
                 errors["base"] = "unknown"
             else:
                 await self.async_set_unique_id(user_input["charger_id"])

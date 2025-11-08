@@ -11,8 +11,11 @@
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect to the MQTT broker. Please check the host, port, and credentials.",
-      "unknown": "An unknown error occurred."
+      "cannot_connect": "Failed to connect to the MQTT broker (iot.nayax.com:1883). Please check your internet connection and firewall settings. Enable debug logging for more details.",
+      "network_unreachable": "Cannot reach the MQTT broker server. Please check your internet connection.",
+      "auth_failed": "MQTT authentication failed. The integration uses hardcoded credentials - this might be a service issue.",
+      "timeout": "Connection timeout. The MQTT broker may be overloaded or your connection is slow.",
+      "unknown": "An unknown error occurred. Please enable debug logging and check the logs for more details."
     },
     "abort": {
       "already_configured": "This EV-Meter charger is already configured."
