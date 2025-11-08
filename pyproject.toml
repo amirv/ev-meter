@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "evmeter-hacs"
-version = "1.0.0"
+version = "2.0.0"
 description = "Home Assistant custom integration for EV-Meter chargers"
 authors = ["Amir Vadai <amirva@gmail.com>"]
 license = "MIT"

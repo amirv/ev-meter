@@ -223,6 +223,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v2.0.0
+- **BREAKING CHANGE**: Converted to use evmeter-client pip package dependency
+- Removed embedded library code for cleaner architecture
+- Updated manifest to require evmeter-client>=1.0.0 from PyPI
+- Added comprehensive pytest-asyncio testing framework
+- Updated documentation for professional HACS deployment
+
 ### v1.0.0
 - Initial HACS-ready release
 - Uses evmeter-client library from PyPI
