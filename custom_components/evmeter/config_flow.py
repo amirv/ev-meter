@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
 from evmeter_client import EVMeterClient, EVMeterConfig
-from evmeter_client.exceptions import EVMeterError
+from evmeter_client.exceptions import EVMeterError, EVMeterTimeoutError
 
 from .const import DOMAIN
 
@@ -65,16 +65,59 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         await client.disconnect()
         _LOGGER.debug("MQTT disconnection successful")
 
+    except EVMeterTimeoutError as e:
+        _LOGGER.warning(f"Timeout during charger status request: {e}")
+        _LOGGER.warning(
+            "This could mean the charger ID is incorrect or the charger is offline"
+        )
+        _LOGGER.warning(
+            "However, MQTT connection was successful, so we'll allow the setup to continue"
+        )
+
+        # For timeout errors, we still consider the setup successful since MQTT connection worked
+        # The charger might just be offline or the ID might be wrong, but that's a runtime issue
+        try:
+            await client.disconnect()
+        except Exception:
+            pass  # Ignore disconnect errors
+
     except EVMeterError as e:
         _LOGGER.error(f"EVMeterError during validation: {e}")
         _LOGGER.error(f"Error type: {type(e).__name__}")
         if hasattr(e, "__cause__") and e.__cause__:
             _LOGGER.error(f"Underlying cause: {e.__cause__}")
-        raise ConnectionError from e
+
+        # Check if this is a connection-related error vs. a timeout/charger error
+        if "connection" in str(e).lower() or "connect" in str(e).lower():
+            raise ConnectionError from e
+        else:
+            # Other EVMeter errors (like protocol errors) shouldn't block setup
+            _LOGGER.warning(
+                "Non-connection error during validation, allowing setup to continue"
+            )
+            try:
+                await client.disconnect()
+            except Exception:
+                pass
+
     except Exception as e:
         _LOGGER.error(f"Unexpected error during validation: {e}")
         _LOGGER.error(f"Error type: {type(e).__name__}")
-        raise ConnectionError from e
+
+        # Only treat actual connection/network errors as setup failures
+        if any(
+            keyword in str(e).lower()
+            for keyword in ["connection", "network", "dns", "resolve", "connect"]
+        ):
+            raise ConnectionError from e
+        else:
+            _LOGGER.warning(
+                "Non-connection error during validation, allowing setup to continue"
+            )
+            try:
+                await client.disconnect()
+            except Exception:
+                pass
 
     return {"title": f"EV-Meter Charger {data['charger_id']}"}
 
