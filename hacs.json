@@ -2,7 +2,5 @@
   "name": "EV-Meter",
   "content_in_root": false,
   "render_readme": true,
-  "zip_release": true,
-  "filename": "evmeter.zip",
   "iot_class": "cloud_polling"
 }
