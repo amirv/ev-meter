@@ -76,7 +76,7 @@ class ReleaseManager:
             )
             with open(manifest_path, "r") as f:
                 data = json.load(f)
-                return data["version"]
+                return str(data["version"])
         else:
             raise ValueError(f"Unknown component: {component}")
 

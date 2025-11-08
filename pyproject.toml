@@ -29,6 +29,30 @@ markers = [
     "asyncio: marks tests as requiring asyncio",
 ]
 
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+show_error_codes = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+exclude = [
+    "t/",
+    "deps/",
+    "sample/",
+    "custom_components/"
+]
+
+# Ignore specific modules that don't have type stubs
+[[tool.mypy.overrides]]
+module = [
+    "homeassistant.*",
+    "voluptuous.*",
+    "evmeter_client.*"
+]
+ignore_missing_imports = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
