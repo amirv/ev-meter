@@ -118,7 +118,7 @@ class ReleaseManager:
         return True
 
     def update_integration_version(
-        self, new_version: str, client_version: str = None
+        self, new_version: str, client_version: Optional[str] = None
     ) -> bool:
         """Update the HACS integration version and client requirement."""
         manifest_path = (
@@ -354,7 +354,9 @@ class ReleaseManager:
         self.log(f"Successfully released evmeter-client v{new_version}")
         return True
 
-    def release_integration(self, bump_type: str, client_version: str = None) -> bool:
+    def release_integration(
+        self, bump_type: str, client_version: Optional[str] = None
+    ) -> bool:
         """Release new version of HACS integration."""
         self.log(f"Starting {bump_type} release for HACS integration")
 
