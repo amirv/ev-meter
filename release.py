@@ -149,9 +149,11 @@ class ReleaseManager:
         """Update the changelog with new version entry."""
         if component == "client":
             changelog_path = self.client_path / "CHANGELOG.md"
+            title_prefix = "# Changelog"
         else:
-            # Integration doesn't have a separate changelog currently
-            return True
+            # Integration uses README.md for changelog
+            changelog_path = self.integration_path / "README.md"
+            title_prefix = "## Changelog"
 
         if not changelog_path.exists():
             self.log(f"Changelog not found: {changelog_path}", "WARNING")
@@ -162,29 +164,61 @@ class ReleaseManager:
 
         # Create new changelog entry
         date_str = datetime.now().strftime("%Y-%m-%d")
-        new_entry = f"""## [{version}] - {date_str}
+
+        if component == "client":
+            new_entry = f"""## [{version}] - {date_str}
 
 ### {bump_type.title()}
 - Version {bump_type} release
 - TODO: Add specific changes for this release
 
 """
-
-        # Insert after the header
-        lines = content.split("\n")
-        insert_pos = 0
-        for i, line in enumerate(lines):
-            if line.startswith("## ["):
-                insert_pos = i
-                break
-
-        if insert_pos > 0:
-            lines.insert(insert_pos, new_entry.rstrip())
-            new_content = "\n".join(lines)
         else:
-            new_content = content.replace(
-                "# Changelog\n\n", f"# Changelog\n\n{new_entry}"
-            )
+            # Integration changelog format in README
+            new_entry = f"""### v{version}
+- **{bump_type.upper()}**: Version {bump_type} release
+- TODO: Add specific changes for this release
+
+"""
+
+        # Insert after the changelog header
+        if component == "client":
+            lines = content.split("\n")
+            insert_pos = 0
+            for i, line in enumerate(lines):
+                if line.startswith("## ["):
+                    insert_pos = i
+                    break
+
+            if insert_pos > 0:
+                lines.insert(insert_pos, new_entry.rstrip())
+                new_content = "\n".join(lines)
+            else:
+                new_content = content.replace(
+                    f"{title_prefix}\n\n", f"{title_prefix}\n\n{new_entry}"
+                )
+        else:
+            # For integration README, insert after "## Changelog" line
+            lines = content.split("\n")
+            insert_pos = -1
+            for i, line in enumerate(lines):
+                if line.strip() == "## Changelog":
+                    # Look for first existing version entry or end of section
+                    for j in range(i + 1, len(lines)):
+                        if lines[j].startswith("### v") or lines[j].startswith("---"):
+                            insert_pos = j
+                            break
+                    if insert_pos == -1:
+                        insert_pos = i + 2  # Insert after header and empty line
+                    break
+
+            if insert_pos > 0:
+                lines.insert(insert_pos, new_entry.rstrip())
+                new_content = "\n".join(lines)
+            else:
+                new_content = content.replace(
+                    f"{title_prefix}\n\n", f"{title_prefix}\n\n{new_entry}"
+                )
 
         if not self.dry_run:
             with open(changelog_path, "w") as f:
@@ -282,6 +316,94 @@ class ReleaseManager:
         self.log(f"Pushed changes and tags for {component}")
         return True
 
+    def create_github_release(
+        self, component: str, version: str, bump_type: str
+    ) -> bool:
+        """Create a GitHub release for the tag."""
+        if component == "client":
+            repo_path = self.client_path
+            repo_name = "evmeter-client"
+        else:
+            repo_path = self.integration_path
+            repo_name = "ev-meter"
+
+        if self.dry_run:
+            self.log(
+                f"Would create GitHub release v{version} for {repo_name}", "DRY_RUN"
+            )
+            return True
+
+        # Check if gh CLI is available
+        success, _ = self.run_command(["which", "gh"], cwd=repo_path)
+        if not success:
+            self.log(
+                "GitHub CLI (gh) not found, skipping GitHub release creation", "WARNING"
+            )
+            self.log(
+                "Install with: brew install gh (macOS) or apt install gh (Ubuntu)",
+                "INFO",
+            )
+            return True
+
+        # Create release notes based on component
+        if component == "client":
+            release_notes = f"""# evmeter-client v{version}
+
+This is a {bump_type} release of the evmeter-client Python package.
+
+## Installation
+```bash
+pip install evmeter-client=={version}
+```
+
+## Changes
+- Version {bump_type} release
+- See [CHANGELOG.md](https://github.com/amirv/evmeter-client/blob/main/CHANGELOG.md) for detailed changes
+
+## PyPI Package
+This release is available on PyPI: https://pypi.org/project/evmeter-client/{version}/
+"""
+        else:
+            release_notes = f"""# EV-Meter HACS Integration v{version}
+
+This is a {bump_type} release of the EV-Meter Home Assistant custom integration.
+
+## Installation via HACS
+1. Add this repository to HACS as a custom repository
+2. Install "EV-Meter" from HACS
+3. Restart Home Assistant
+4. Add the integration via Settings > Devices & Services
+
+## Changes
+- Version {bump_type} release
+- See [README.md](https://github.com/amirv/ev-meter/blob/main/README.md#changelog) for detailed changes
+
+## Dependencies
+- Requires evmeter-client from PyPI (automatically handled by Home Assistant)
+"""
+
+        # Create the release
+        success, output = self.run_command(
+            [
+                "gh",
+                "release",
+                "create",
+                f"v{version}",
+                "--title",
+                f"v{version}",
+                "--notes",
+                release_notes,
+            ],
+            cwd=repo_path,
+        )
+
+        if not success:
+            self.log(f"Failed to create GitHub release: {output}", "ERROR")
+            return False
+
+        self.log(f"Created GitHub release v{version} for {component}")
+        return True
+
     def build_and_publish_client(self, version: str) -> bool:
         """Build and publish the client package to PyPI."""
         if self.dry_run:
@@ -351,6 +473,10 @@ class ReleaseManager:
         if not self.push_changes("client", new_version):
             return False
 
+        # Create GitHub release
+        if not self.create_github_release("client", new_version, bump_type):
+            return False
+
         self.log(f"Successfully released evmeter-client v{new_version}")
         return True
 
@@ -369,12 +495,20 @@ class ReleaseManager:
         if not self.update_integration_version(new_version, client_version):
             return False
 
+        # Update changelog in README
+        if not self.update_changelog("integration", new_version, bump_type):
+            return False
+
         # Commit and tag
         if not self.git_commit_and_tag("integration", new_version, bump_type):
             return False
 
         # Push to git
         if not self.push_changes("integration", new_version):
+            return False
+
+        # Create GitHub release
+        if not self.create_github_release("integration", new_version, bump_type):
             return False
 
         self.log(f"Successfully released HACS integration v{new_version}")

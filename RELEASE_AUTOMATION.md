@@ -27,8 +27,9 @@ Automates the complete release process for:
 ### Features
 
 - ✅ **Semantic Versioning** - Automatic version bumping (major.minor.patch)
-- ✅ **Changelog Updates** - Automatic changelog entry creation
+- ✅ **Changelog Updates** - Automatic changelog entry creation (client CHANGELOG.md + integration README.md)
 - ✅ **Git Operations** - Commit, tag, and push automation
+- ✅ **GitHub Releases** - Automatic GitHub release creation with release notes
 - ✅ **PyPI Publishing** - Build and upload packages automatically
 - ✅ **Dependency Updates** - Sync integration requirements with client versions
 - ✅ **Dry Run Mode** - Test releases without making changes
@@ -88,14 +89,17 @@ python release.py --type patch --component integration
 5. Builds package using `python -m build`
 6. Publishes to PyPI using `twine upload`
 7. Pushes commits and tags to GitHub
+8. Creates GitHub release with auto-generated release notes
 
 #### For Integration Releases (`ev-meter`):
 1. Bumps version in `manifest.json`
-2. Updates client requirement to latest version (if releasing both)
-3. Commits changes with descriptive message
-4. Creates git tag (`v2.1.0`)
-5. Pushes commits and tags to GitHub
-6. HACS automatically detects the new release
+2. Updates `README.md` changelog section with new version entry
+3. Updates client requirement to latest version (if releasing both)
+4. Commits changes with descriptive message
+5. Creates git tag (`v2.1.0`)
+6. Pushes commits and tags to GitHub
+7. Creates GitHub release with auto-generated release notes
+8. HACS automatically detects the new release
 
 #### For Both Components:
 1. Releases client first
@@ -108,6 +112,11 @@ python release.py --type patch --component integration
 - Virtual environment at `/home/amirv/git/evmeter-client/test_env/`
 - `build` and `twine` packages installed in venv
 - PyPI credentials configured for `twine`
+
+**For GitHub Releases:**
+- GitHub CLI (`gh`) installed and authenticated
+- Install: `brew install gh` (macOS) or `apt install gh` (Ubuntu)
+- Authenticate: `gh auth login`
 
 **For All Releases:**
 - Git repositories with clean working directories

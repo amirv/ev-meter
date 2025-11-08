@@ -223,6 +223,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v2.0.2
+- **FIX**: Updated to require evmeter-client>=1.1.1
+- Fixes critical parser errors with MQTT message handling
+- Improved error handling and diagnostics
+
 ### v2.0.1
 - **FIX**: Removed zip_release from hacs.json to fix HACS download issues
 - Integration files are directly in repository, no zip file needed
