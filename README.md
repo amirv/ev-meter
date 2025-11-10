@@ -223,6 +223,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v3.1.0
+- **MINOR**: Version minor release
+- TODO: Add specific changes for this release
 ### v2.2.0
 - **MINOR**: Version minor release
 - TODO: Add specific changes for this release
