@@ -11,7 +11,7 @@
   "iot_class": "local_push",
   "integration_type": "device",
   "requirements": [
-    "evmeter-client==3.0.0"
+    "evmeter-client==3.1.0"
   ],
   "loggers": [
     "evmeter_client"
